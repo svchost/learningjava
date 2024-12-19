@@ -1,6 +1,6 @@
-public class account {
+public class account implements AccountOperations {
     // Private fields with getter/setter pattern
-    private double balance;
+    protected double balance;
     private String accountNumber;
     private AccountType accountType;
 
@@ -18,6 +18,7 @@ public class account {
     }
 
     // Public methods - interface for other classes
+    @Override
     public double getBalance() {
         return balance;
     }
@@ -26,11 +27,13 @@ public class account {
         return accountType;
     }
 
+    @Override
     public void deposit(double amount) {
         validateAmount(amount);
         this.balance += amount;
     }
 
+    @Override
     public void withdraw(double amount) {
         validateAmount(amount);
         this.balance -= amount;

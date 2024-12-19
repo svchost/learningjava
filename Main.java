@@ -3,88 +3,89 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+
         Scanner scanner = new Scanner(System.in);
 
         accountvalidator accountvalidator = new accountvalidator();
 
-        System.out.print("Enter account number: ");
-        String Accountnumber = scanner.next();
-
-        SavingsAccount savingaccount = new SavingsAccount(Accountnumber);
-        CheckingAccount checkingaccount = new CheckingAccount(Accountnumber);
-
-        if(accountvalidator.isValidAccountNumber(Accountnumber))
-            System.out.println("Account number is correct " + Accountnumber);
-        else System.out.println("Account number is incorrect " + Accountnumber);
+        while(true) {
+            System.out.print("Enter account number: ");
+            String accountNumber = scanner.next();
 
 
-
-            //System.out.println("AccountType: " + savingaccount.GetType());
-
-        System.out.print("PICK ACCOUNT TYPE: 1. Checking: 2. Saving: ");
-        int accountTypee = scanner.nextInt();
-
-
-
-
-       switch (accountTypee){
-           case 1:
-               //checking
-               System.out.print("THISISCHECKING");
-              System.out.println("ACCOUNT ACTION: 1. Deposit: 2. Withdraw: ");
-               int checkingacc = scanner.nextInt();
-            switch (checkingacc) {
-                case 1:
-                    System.out.print("DEPOSITING, ENTER AMOUNT YOU WANT TO DEPOSIT: ");
-                    int number = scanner.nextInt();
-                    checkingaccount.deposit(number);
-                    System.out.println("Successfully deposited: " + number);
-                    System.out.println("New balance " + checkingaccount.getBalance());
-                    break;
-                    case 2:
-                        System.out.print("WITHDRAWING, ENTER AMOUNT YOU WANT TO WITHDRAW: ");
-                        int withdrawal = scanner.nextInt();
-                        checkingaccount.withdraw(withdrawal);
-                        System.out.println("Successfully withdrawn: " + withdrawal);
-                        System.out.println("New balance " + checkingaccount.getBalance());
-                        break;
-                        default:
-                            System.out.println("Invalid Action selected.");
-                            return;
-                }
-                break;
-                case 2:
-                    //savings
-                    System.out.print("THISISSAVINGS");
-                    System.out.println("ACCOUNT ACTION: 1. Deposit: 2. Withdraw: ");
-                    int savingacc = scanner.nextInt();
-                    switch (savingacc) {
-                        case 1:
-                            System.out.print("DEPOSITING, ENTER AMOUNT YOU WANT TO DEPOSIT: ");
-                            int savingamount = scanner.nextInt();
-                            savingaccount.deposit(savingamount);
-                            System.out.println("Successfully deposited: " + savingamount);
-                            System.out.println("New balance " + savingaccount.getBalance());
-                            savingaccount.addMonthlyInterest();
-                            System.out.println("New balance AfterInterest " + savingaccount.getBalance());
-                            break;
-                        case 2:
-                            System.out.print("WITHDRAWING, ENTER AMOUNT YOU WANT TO WITHDRAW: ");
-                            int withdrawingamount = scanner.nextInt();
-                            savingaccount.withdraw(withdrawingamount);
-                            System.out.println("Successfully withdrawn: " + withdrawingamount);
-                            savingaccount.addMonthlyInterest();
-                            System.out.println("New balance " + savingaccount.getBalance());
-                            break;
-                        default:
-                            System.out.println("Invalid Action selected.");
-                            return;
-                    }
-                        break;
-                    default:
-                    System.out.println("Invalid account type selected.");
-               return;
+            if (!accountvalidator.isValidAccountNumber(accountNumber)) {
+                System.out.println("Account number is incorrect " + accountNumber);
+                return;
             }
-       }
+
+            System.out.print("PICK ACCOUNT TYPE: 1. Checking: 2. Saving: ");
+            int accountTypee = scanner.nextInt();
+
+            AccountOperations account;
+            switch (accountTypee) {
+                case 1:
+                    account = new CheckingAccount(accountNumber);
+                    System.out.println("this is a checking account");
+                    if (account instanceof AccountOverdarftProtection) {
+                        System.out.print("Set overdraft limit: ");
+                        double limit = scanner.nextDouble();
+                        ((AccountOverdarftProtection) account).setOverdraftLimit(limit);
+                        System.out.println("Overdraft limit set to: " + limit);
+                    }
+                    break;
+                case 2:
+                    account = new SavingsAccount(accountNumber);
+                    System.out.println("this is a saving account");
+                    break;
+                default:
+                    System.out.println("Invalid account type");
+                    return;
+            }
+
+            System.out.print("PICK ACCOUNT ACTION: 1. DEPOSIT: 2. WITHDRAW: ");
+            int accountaction = scanner.nextInt();
+            switch (accountaction) {
+                case 1:
+                    System.out.print("ENTER DEPOSIT AMOUNT: ");
+                    double depositAmount = scanner.nextDouble();
+                    try {
+                        account.deposit(depositAmount);
+                        System.out.println("deposit successful: " + depositAmount);
+                    } catch (Exception e) {
+                        System.out.println("ERROR: " + e.getMessage());
+                    }
+                    break;
+                case 2:
+                    System.out.print("ENTER WITHDRAWAL AMOUNT: ");
+                    double withdrawalAmount = scanner.nextDouble();
+                    try {
+                        account.withdraw(withdrawalAmount);
+                        System.out.println("withdrawal successful: " + withdrawalAmount);
+                    } catch (Exception e) {
+                        System.out.println("ERROR: " + e.getMessage());
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid account action");
+                    return;
+            }
+            System.out.println("New Balance: " + account.getBalance());
+
+            if (account instanceof INTRESTACCOUNT) {
+                ((INTRESTACCOUNT) account).addMonthlyInterest();
+                System.out.println("Interest Added. New balance: " + account.getBalance());
+            }
+
+
+            try {
+                System.out.println("System is restarting please wait 5 seconds before typing");
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
 
     }
+
+}
